@@ -9,7 +9,7 @@
  - Params validation
  - Create, Read, Update and  Delete operations
  - Image upload using Multer
- - custom error handling using express-validator
+ - Custom error handling using express-validator
 ## How To use
 ```bash
 # Clone this repository
@@ -50,7 +50,7 @@ DELETE /Recipes/:id
   - Search by category  =>  `?category=`  in (Moroccan, Mexican, Italian, Turkish, Chinese)   
   - Sort by a field  =>  `?sort=target,asc` by default  sorting is  in asc order  (use desc to reverse the order)   
   - limit   =>  `?limit=10`  limit the  received documents number 
-
+  - Global search   =>  `?search=`  perform a global search on multiple fields
 ## Server configuration   
  - Using Multer library the server provides the ability to store images locally in the uploads folder while the database tracks information about the uploaded image.
  - Cors Policy is handled using the cors library to allow requests from any origin.
