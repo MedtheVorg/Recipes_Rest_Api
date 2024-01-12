@@ -1,131 +1,81 @@
 # Recipe Rest API
+ Recipe API is a Rest API that offers the ability to perform CRUD operations against a MongoDB instance and a variety of features.
+ 
 
+## Features
+ - Filtering response data  using Query Params (sort, limit, search,...)
+ - Request payload validation
+ - Query params validation
+ - Params validation
+ - Create, Read, Update and  Delete operations
+ - Image upload using Multer
+ - custom error handling using express-validator
+## How To use
+```bash
+# Clone this repository
+$  git clone https://github.com/MedtheVorg/Recipes_Rest_Api.git
 
-## Filtering Options
+# Go into the repository
+$ cd livre-de-recettes-en-ligne
 
+# install dependencies
+$ npm install
 
+# add .env file
+ - Create a .env file in the root directory and add  the following environment variables : 
+  PORT = ""
+  DB_USERNAME =""
+  DB_PASSWORD =""
 
-
-## Install
-
-```shell
-npm install json-server
+# Run the server
+$ npm run server
 ```
 
-## Usage
-
-Create a `db.json` (or `db.json5`) file
-
-
-Pass it to JSON Server CLI
-
-
-
-
-|
-
 ## Routes
-
- get the following routes:
-
+Available Routes
 ```
 GET    /Recipes
 GET    /Recipes/:id
 POST   /Recipes
-PUT    /Recipes/:id
 PATCH  /Recipes/:id
 DELETE /Recipes/:id
-
-# Same for comments
 ```
 
-```
-GET   /profile
-PUT   /profile
-PATCH /profile
-```
 
-## Params
+## Filtering Params
+  the api currently offers the following query params to filter data : 
+  - Search by title  =>  `?title=` (exact value)   
+  - Search by description  =>  `?description=`  (exact value) 
+  - Search by rating  =>  `?rating=1` | `?rating_gt=` | `?rating=_lt`    (by default rating is between 1 and 5)
+  - Search by category  =>  `?category=`  in (Moroccan, Mexican, Italian, Turkish, Chinese)   
+  - Sort by a field  =>  `?sort=target,asc` by default  sorting is  in asc order  (use desc to reverse the order)   
+  - limit   =>  `?limit=10`  limit the  received documents number 
 
-### Conditions
+## Server configuration   
+ - Using Multer library the server provides the ability to store images locally in the uploads folder while the database tracks information about the uploaded image.
+ - Cors Policy is handled using the cors library to allow requests from any origin.
+ - Query parsing is handled using the URLSearchParams class for its simple interface and the elimination of the default parsing syntax provided by the express qs module
+ - the server was  built with validation in mind whether its request payload, filtering query params or  uploaded files.
 
-- ` ` → `==`
-- `lt` → `<`
-- `lte` → `<=`
-- `gt` → `>`
-- `gte` → `>=`
-- `ne` → `!=`
 
-```
-GET /posts?views_gt=9000
-```
+## Contributing
+If you'd like to contribute code, documentation, or other enhancements, please follow these general steps:
+### How to Contribute
+1. Fork the repository.
+2. Create a new branch for your changes.
+3. Make your changes and test them thoroughly.
+4. Create a pull request with a clear title and description.
 
-### Range
-
-- `start`
-- `end`
-- `limit`
-
-```
-GET /posts?_start=10&_end=20
-GET /posts?_start=10&_limit=10
-```
-
-### Paginate
-
-- `page`
-- `per_page` (default = 10)
-
-```
-GET /posts?_page=1&_per_page=25
-```
-
-### Sort
-
-- `_sort=f1,f2`
-
-```
-GET /posts?_sort=id,-views
-```
-
-### Nested and array fields
-
-- `x.y.z...`
-- `x.y.z[i]...`
-
-```
-GET /posts?author.name=foo
-GET /posts?author.email=foo
-GET /posts?tags[0]=foo
-```
-
-### Embed
-
-```
-GET /posts?_embed=comments
-GET /comments?_embed=post
-```
-
-## Delete
-
-```
-DELETE /posts/1
-DELETE /posts/1?_embed=comments
-```
-
-## Serving static files
-
-If you create a `./public` directory, JSON Serve will serve its content in addition to the REST API.
-
-You can also add custom directories using `-s/--static` option.
-
-```sh
-json-server -s ./static
-json-server -s ./static -s ./node_modules
-```
+Thank you for helping improve this project!
 
 ## License
 
-This project uses the [Fair Source License](https://fair.io/). Note: Only organizations with 3+ users need to contribute a small amount through sponsorship [sponsor](https://github.com/sponsors/typicode) for usage. This license helps keep the project sustainable and healthy, benefiting everyone.
+This project uses the [MIT License](https://mit-license.org/). The MIT License (MIT)
+Copyright © 2024 <copyright holders>
 
-For more information, FAQs, and the rationale behind this, visit [https://fair.io/](https://fair.io/).
+Permission is hereby granted, free of charge, to any person obtaining a copy of this software and associated documentation files (the “Software”), to deal in the Software without restriction, including without limitation the rights to use, copy, modify, merge, publish, distribute, sublicense, and/or sell copies of the Software, and to permit persons to whom the Software is furnished to do so, subject to the following conditions:
+
+The above copyright notice and this permission notice shall be included in all copies or substantial portions of the Software.
+
+THE SOFTWARE IS PROVIDED “AS IS”, WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
+
