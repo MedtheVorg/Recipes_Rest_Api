@@ -4,6 +4,19 @@
 
 # Overview
  Recipe API is a Rest API that offers the ability to perform CRUD operations against a MongoDB instance and a variety of features.
+
+# Technologies
+  this project was built using the following technologies :
+  - [**TypeScript**](https://www.typescriptlang.org/):  Superset of JavaScript that adds static typing to the language.
+  - [**NodeJs**](https://nodejs.org/) : Server-side JavaScript runtime built on Chrome's V8 JavaScript engine.
+  - [**ExpressJs**](https://expressjs.com/) : Minimalist web application framework for Node.js.
+  - [**MongoDB**](https://www.mongodb.com/) : NoSQL database system, using a document-oriented data model.
+  - [**Mongoose**](https://mongoosejs.com/) : MongoDB object modeling for Node.js.
+ 
+
+MongoDB: 
+  
+  You can refer to [package.json](./package.json) file for more details
  
 <br/>
 
