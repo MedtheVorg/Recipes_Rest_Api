@@ -14,7 +14,6 @@
   - [**Mongoose**](https://mongoosejs.com/) : MongoDB object modeling for Node.js.
  
 
-MongoDB: 
   
   You can refer to [package.json](./package.json) file for more details
  
