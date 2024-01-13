@@ -1,8 +1,14 @@
-# Recipe Rest API
+
+***<h1 align="center" style="border:none;text-decoration:underline">Recipe REST API</h1>***
+
+
+# Overview
  Recipe API is a Rest API that offers the ability to perform CRUD operations against a MongoDB instance and a variety of features.
  
 
-## Features
+
+
+# Features
  - Filtering response data  using Query Params (sort, limit, search,...)
  - Request payload validation
  - Query params validation
@@ -10,7 +16,7 @@
  - Create, Read, Update and  Delete operations
  - Image upload using Multer
  - Custom error handling using express-validator
-## How To use
+# How To use
 ```bash
 # Clone this repository
 $  git clone https://github.com/MedtheVorg/Recipes_Rest_Api.git
@@ -31,7 +37,7 @@ $ npm install
 $ npm run server
 ```
 
-## Routes
+# Routes
 Available Routes
 ```
 GET    /Recipes
@@ -42,7 +48,7 @@ DELETE /Recipes/:id
 ```
 
 
-## Filtering Params
+# Filtering Params
   the api currently offers the following query params to filter data : 
   - Search by title  =>  `?title=` (exact value)   
   - Search by description  =>  `?description=`  (exact value) 
@@ -51,16 +57,16 @@ DELETE /Recipes/:id
   - Sort by a field  =>  `?sort=target,asc` by default  sorting is  in asc order  (use desc to reverse the order)   
   - limit   =>  `?limit=10`  limit the  received documents number 
   - Global search   =>  `?search=`  perform a global search on multiple fields
-## Server configuration   
+# Server configuration   
  - Using Multer library the server provides the ability to store images locally in the uploads folder while the database tracks information about the uploaded image.
  - Cors Policy is handled using the cors library to allow requests from any origin.
  - Query parsing is handled using the URLSearchParams class for its simple interface and the elimination of the default parsing syntax provided by the express qs module.
  - the server was  built with validation in mind whether its request payload, filtering query params or  uploaded files.
 
 
-## Contributing
+# Contributing
 If you'd like to contribute code, documentation, or other enhancements, please follow these general steps:
-### How to Contribute
+## How to Contribute
 1. Fork the repository.
 2. Create a new branch for your changes.
 3. Make your changes and test them thoroughly.
