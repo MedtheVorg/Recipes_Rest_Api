@@ -16,7 +16,7 @@
 $  git clone https://github.com/MedtheVorg/Recipes_Rest_Api.git
 
 # Go into the repository
-$ cd livre-de-recettes-en-ligne
+$ cd Recipes_Rest_Api
 
 # install dependencies
 $ npm install
