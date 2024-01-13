@@ -5,8 +5,7 @@
 # Overview
  Recipe API is a Rest API that offers the ability to perform CRUD operations against a MongoDB instance and a variety of features.
  
-
-
+<br/>
 
 # Features
  - Filtering response data  using Query Params (sort, limit, search,...)
@@ -16,6 +15,9 @@
  - Create, Read, Update and  Delete operations
  - Image upload using Multer
  - Custom error handling using express-validator
+
+<br/>
+
 # How To use
 ```bash
 # Clone this repository
@@ -36,6 +38,7 @@ $ npm install
 # Run the server
 $ npm run server
 ```
+<br/>
 
 # Routes
 Available Routes
@@ -46,7 +49,7 @@ POST   /Recipes
 PATCH  /Recipes/:id
 DELETE /Recipes/:id
 ```
-
+<br/>
 
 # Filtering Params
   the api currently offers the following query params to filter data : 
@@ -57,15 +60,20 @@ DELETE /Recipes/:id
   - Sort by a field  =>  `?sort=target,asc` by default  sorting is  in asc order  (use desc to reverse the order)   
   - limit   =>  `?limit=10`  limit the  received documents number 
   - Global search   =>  `?search=`  perform a global search on multiple fields
+
+<br/>
+
 # Server configuration   
  - Using Multer library the server provides the ability to store images locally in the uploads folder while the database tracks information about the uploaded image.
  - Cors Policy is handled using the cors library to allow requests from any origin.
  - Query parsing is handled using the URLSearchParams class for its simple interface and the elimination of the default parsing syntax provided by the express qs module.
  - the server was  built with validation in mind whether its request payload, filtering query params or  uploaded files.
 
+<br/>
 
 # Contributing
 If you'd like to contribute code, documentation, or other enhancements, please follow these general steps:
+
 ## How to Contribute
 1. Fork the repository.
 2. Create a new branch for your changes.
@@ -74,7 +82,9 @@ If you'd like to contribute code, documentation, or other enhancements, please f
 
 Thank you for helping improve this project!
 
-## License
+<br/>
+
+# License
 
 This project uses the [MIT License](https://mit-license.org/). The MIT License (MIT)
 Copyright © 2024 <copyright holders>
