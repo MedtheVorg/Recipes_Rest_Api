@@ -46,7 +46,7 @@ DELETE /Recipes/:id
   the api currently offers the following query params to filter data : 
   - Search by title  =>  `?title=` (exact value)   
   - Search by description  =>  `?description=`  (exact value) 
-  - Search by rating  =>  `?rating=1` | `?rating_gt=` | `?rating=_lt`    (by default rating is between 1 and 5)
+  - Search by rating  =>  `?rating=1` | `?rating_gt=` | `?rating_lt=`    (by default rating is between 1 and 5)
   - Search by category  =>  `?category=`  in (Moroccan, Mexican, Italian, Turkish, Chinese)   
   - Sort by a field  =>  `?sort=target,asc` by default  sorting is  in asc order  (use desc to reverse the order)   
   - limit   =>  `?limit=10`  limit the  received documents number 
@@ -54,7 +54,7 @@ DELETE /Recipes/:id
 ## Server configuration   
  - Using Multer library the server provides the ability to store images locally in the uploads folder while the database tracks information about the uploaded image.
  - Cors Policy is handled using the cors library to allow requests from any origin.
- - Query parsing is handled using the URLSearchParams class for its simple interface and the elimination of the default parsing syntax provided by the express qs module
+ - Query parsing is handled using the URLSearchParams class for its simple interface and the elimination of the default parsing syntax provided by the express qs module.
  - the server was  built with validation in mind whether its request payload, filtering query params or  uploaded files.
 
 
@@ -79,3 +79,6 @@ The above copyright notice and this permission notice shall be included in all c
 
 THE SOFTWARE IS PROVIDED “AS IS”, WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 
+
+# links
+[**REACT**](./src/index.ts)
