@@ -7,13 +7,13 @@ import express from 'express';
 import compression from 'compression';
 import { connectToMongoDB } from './mongo';
 import Logger from './utils/logger';
+import { dbConfig } from './config/mongoDBConfig';
+import cors, { CorsOptions } from 'cors';
+import { RecipeRouter } from './routers/recipeRouter';
 import healthCheck from './controllers/healthCheck';
 import requestLogger from './middlewares/log/requestLogger';
 import { errorHandler } from './middlewares/errors/errorHandlerMiddleware';
 import notFound from './middlewares/notFound';
-import { RecipeRouter } from './routers/recipeRouter';
-import { dbConfig } from './config/mongoDBConfig';
-import cors, { CorsOptions } from 'cors';
 // Main APP (Router)
 const app = express();
 
@@ -56,7 +56,9 @@ function startServer() {
   app.use(requestLogger); // custom middleware to log request and response
   app.use(compression()); //This middleware will attempt to compress response bodies
   app.use(express.json()); // parses incoming request with json payload
+  app.use(express.static('./uploads'));
   app.get('/', healthCheck); //Health check
+
   //Routers
   app.use('/api/v1', RecipeRouter);
 
