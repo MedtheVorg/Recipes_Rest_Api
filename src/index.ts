@@ -3,19 +3,22 @@
 // so we don't need to use the try catch syntax
 import 'express-async-errors';
 //-------------------------------------------------------------------------------------------
-import express from 'express';
+import express, { Express } from 'express';
 import compression from 'compression';
 import { connectToMongoDB } from './mongo';
 import Logger from './utils/logger';
 import { dbConfig } from './config/mongoDBConfig';
 import cors, { CorsOptions } from 'cors';
-import { RecipeRouter } from './routers/recipeRouter';
+import { RecipeRouter } from './routes/recipeRouter';
 import healthCheck from './controllers/healthCheck';
 import requestLogger from './middlewares/log/requestLogger';
 import { errorHandler } from './middlewares/errors/errorHandlerMiddleware';
 import notFound from './middlewares/notFound';
+import swaggerUI from 'swagger-ui-express';
+import { swaggerUiSpecs } from './documentation/swagger';
+
 // Main APP (Router)
-const app = express();
+const app: Express = express();
 
 // server entry point
 initializeApp();
@@ -56,7 +59,8 @@ function startServer() {
   app.use(requestLogger); // custom middleware to log request and response
   app.use(compression()); //This middleware will attempt to compress response bodies
   app.use(express.json()); // parses incoming request with json payload
-  app.use(express.static('./uploads'));
+  app.use(express.static('./uploads')); //
+  app.use('/api-docs', swaggerUI.serve, swaggerUI.setup(swaggerUiSpecs));
   app.get('/', healthCheck); //Health check
 
   //Routers

@@ -27,8 +27,8 @@ const readAllRecipes = async (req: Request, res: Response) => {
   const fetchedRecipes: SpreadDocument<HydratedRecipeDocument>[] | [] =
     await query.populate('image').exec();
   // refactor fetched Recipes
-  const refactoredRecipes = fetchedRecipes.map((recipe) =>
-    refactorRecipe(recipe)
+  const refactoredRecipes = fetchedRecipes.map(
+    (recipe: HydratedRecipeDocument) => refactorRecipe(recipe)
   );
   res.status(HttpCode.OK).json({
     status: 200,
@@ -49,7 +49,7 @@ const readRecipe = async (req: Request, res: Response) => {
 
   fetchedRecipe
     ? res.status(HttpCode.OK).json(refactorRecipe(fetchedRecipe))
-    : res.status(HttpCode.NOT_FOUND).json('Recipe not found.');
+    : res.status(HttpCode.NOT_FOUND).json({ msg: 'Recipe not found.' });
 };
 
 /**
@@ -113,6 +113,9 @@ const createRecipe = async (req: Request, res: Response) => {
  */
 const updateRecipe = async (req: Request, res: Response) => {
   const { recipeID } = req.params;
+
+  console.log('updating recipe');
+  console.log(recipeID);
 
   const fetchedRecipe: HydratedRecipeDocument | null = await Recipe.findById(
     recipeID
@@ -181,8 +184,8 @@ const deleteRecipe = async (req: Request, res: Response) => {
   const deletedRecipe = await Recipe.findByIdAndDelete(recipeID).exec();
 
   deletedRecipe
-    ? res.status(HttpCode.OK).json('Recipe Deleted.')
-    : res.status(HttpCode.NOT_FOUND).json('Recipe not found.');
+    ? res.status(HttpCode.OK).json({ msg: 'Recipe Deleted.' })
+    : res.status(HttpCode.NOT_FOUND).json({ msg: 'Recipe not found.' });
 };
 
 export { createRecipe, readAllRecipes, readRecipe, updateRecipe, deleteRecipe };

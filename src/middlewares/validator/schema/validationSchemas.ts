@@ -1,4 +1,3 @@
-import { Schema } from 'express-validator';
 import {
   addCommonRules,
   allPropertiesAreValid,
@@ -216,6 +215,7 @@ export const RecipeValidationSchema_FORMDATA = {
       errorMessage: 'category should be a string',
       bail: true,
     },
+
     isIn: {
       options: [['Moroccan', 'Mexican', 'Italian', 'Turkish', 'Chinese']],
       errorMessage: `category must be on of the following options : [${[

@@ -32,12 +32,13 @@ export const upload = multer({
   }),
   limits: { files: 1 }, // accept only 1 file
 });
+
 // middleware to handle a single uploaded image
 const parseIncomingImage = upload.single('uploaded_image');
 //--------------------------------------
 const router = express.Router();
 
-// Get all recipes
+// get all recipes
 router.get('/recipes', validateQueryParams, readAllRecipes);
 
 // Get a single Recipe
@@ -56,8 +57,8 @@ router.post(
 router.patch(
   '/recipes/:recipeID',
   validateFormDataHeader,
-  parseIncomingImage,
   validateRecipeId,
+  parseIncomingImage,
   validateUpdatedRecipePayload_FORMDATA,
   updateRecipe
 );

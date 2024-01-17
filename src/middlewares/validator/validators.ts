@@ -14,7 +14,7 @@ import {
   optionalRecipeValidationSchema_FORMDATA,
   optionalRecipeValidationSchema_JSON,
 } from './schema/validationSchemas';
-import { upload } from '../../routers/recipeRouter';
+import { upload } from '../../routes/recipeRouter';
 import multer, { MulterError } from 'multer';
 
 export type FilterOptions = {
@@ -214,24 +214,24 @@ async function validateUpdatedRecipePayload_FORMDATA(
   }
 
   // validate incoming request payload against the req object
-  const validationResultArray: ResultWithContext[] = await checkSchema(
-    optionalRecipeValidationSchema_FORMDATA,
-    ['body']
-  ).run(req);
+  // const validationResultArray: ResultWithContext[] = await checkSchema(
+  //   optionalRecipeValidationSchema_FORMDATA,
+  //   ['body']
+  // ).run(req);
 
-  if (validationResultArray.length > 0) {
-    validationResultArray.forEach((ValidationResult: ResultWithContext) => {
-      // throw the first error of the invalid field
-      if (ValidationResult.array().length > 0) {
-        const errorMsg = ValidationResult.array()[0].msg;
-        // throw custom Error for the errorHandler middleware to catch and handle
-        throw new AppError({
-          httpCode: HttpCode.BAD_REQUEST,
-          description: errorMsg,
-        });
-      }
-    });
-  }
+  // if (validationResultArray.length > 0) {
+  //   validationResultArray.forEach((ValidationResult: ResultWithContext) => {
+  //     // throw the first error of the invalid field
+  //     if (ValidationResult.array().length > 0) {
+  //       const errorMsg = ValidationResult.array()[0].msg;
+  //       // throw custom Error for the errorHandler middleware to catch and handle
+  //       throw new AppError({
+  //         httpCode: HttpCode.BAD_REQUEST,
+  //         description: errorMsg,
+  //       });
+  //     }
+  //   });
+  // }
 
   next();
 }
