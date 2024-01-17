@@ -44,8 +44,9 @@ $ npm install
 # add .env file
  - Create a .env file in the root directory and add  the following environment variables : 
   PORT = ""
-  DB_USERNAME =""
-  DB_PASSWORD =""
+  REMOTE_DB_CONNECTION_STRING = "";
+  LOCAL_DB_CONNECTION_STRING = "";
+
 
 # Run the server
 $ npm run server
