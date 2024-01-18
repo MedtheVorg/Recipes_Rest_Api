@@ -1,3 +1,4 @@
+import { Schema } from 'express-validator';
 import {
   addCommonRules,
   allPropertiesAreValid,
@@ -8,7 +9,7 @@ import {
   isObjectEmpty,
 } from '../../../utils/helperFunction';
 
-//--------------------EXPRESS VALIDATOR  SCHEMAS----------------------
+//#region --------------------RECIPE VALIDATOR SCHEMAS----------------------
 export const RecipeValidationSchema_JSON = {
   title: {
     trim: true,
@@ -370,5 +371,41 @@ export const optionalRecipeValidationSchema_FORMDATA = addCommonRules(
     optional: true,
   }
 );
+//#endregion
 
-//-------------------------------------------------------------
+//#region --------------------USER VALIDATOR SCHEMAS----------------------
+export const UserValidationSchema_FORMDATA: Schema = {
+  username: {
+    exists: {
+      errorMessage: 'username field is required',
+      bail: true,
+    },
+    trim: true,
+    notEmpty: {
+      errorMessage: 'username must not be empty',
+      bail: true,
+    },
+    isString: {
+      errorMessage: 'username must be a string',
+      bail: true,
+    },
+  },
+  password: {
+    exists: {
+      errorMessage: 'password field is required',
+      bail: true,
+    },
+    trim: true,
+    notEmpty: {
+      errorMessage: 'password must not be empty',
+      bail: true,
+    },
+    isString: {
+      errorMessage: 'password must be a string',
+      bail: true,
+    },
+    // escape???
+  },
+};
+
+//#endregion

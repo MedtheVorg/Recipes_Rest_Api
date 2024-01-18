@@ -1,5 +1,5 @@
 import { NextFunction, Request, Response } from 'express';
-import { checkSchema, param } from 'express-validator';
+import { body, checkSchema, param } from 'express-validator';
 import { ResultWithContext } from 'express-validator/src/chain';
 import { AppError, HttpCode } from '../../utils/AppError';
 import { Types } from 'mongoose';
@@ -11,11 +11,10 @@ import {
 import {
   RecipeValidationSchema_FORMDATA,
   RecipeValidationSchema_JSON,
+  UserValidationSchema_FORMDATA,
   optionalRecipeValidationSchema_FORMDATA,
   optionalRecipeValidationSchema_JSON,
 } from './schema/validationSchemas';
-import { upload } from '../../routes/recipeRouter';
-import multer, { MulterError } from 'multer';
 
 export type FilterOptions = {
   title: any;
@@ -34,35 +33,38 @@ export interface RequestWithSortOptions extends Request {
   filterOptions: FilterOptions;
 }
 
-//--------------------VALIDATION MIDDLEWARES------------------------------
-async function validateRecipeId(
-  req: Request,
-  res: Response,
-  next: NextFunction
-) {
-  // validation chain rules
-  const validationChain = param('recipeID')
-    .trim()
-    .notEmpty()
-    .custom((valueToValidate: any) => {
-      return Types.ObjectId.isValid(valueToValidate);
-    })
-    .withMessage('recipeID must be a valid mongoose ObjectID');
+// -----GENERAL VALIDATION MIDDLEWARES----
+function validateID(idName: string) {
+  return async function (req: Request, res: Response, next: NextFunction) {
+    // validation chain rules
+    const validationChain = param(idName)
+      .trim()
+      .notEmpty()
+      .custom((valueToValidate: any) => {
+        return Types.ObjectId.isValid(valueToValidate);
+      })
+      .withMessage(`${idName} must be a valid mongoose ObjectID`);
 
-  // run the current validation chain against the req object
-  const validationResult = await validationChain.run(req);
+    // run the current validation chain against the req object
+    const validationResult = await validationChain.run(req);
 
-  // if an error is encountered
-  if (!validationResult.isEmpty()) {
-    const errorMessage = validationResult.array()[0].msg;
-    throw new AppError({
-      httpCode: HttpCode.BAD_REQUEST,
-      description: errorMessage,
-    });
-  } else {
-    next();
-  }
+    // if an error is encountered
+    if (!validationResult.isEmpty()) {
+      const errorMessage = validationResult.array()[0].msg;
+      next(
+        new AppError({
+          httpCode: HttpCode.BAD_REQUEST,
+          description: errorMessage,
+        })
+      );
+    } else {
+      next();
+    }
+  };
 }
+
+//#region  -----RECIPE VALIDATION MIDDLEWARES----
+
 async function validateRecipePayload_JSON(
   req: Request,
   res: Response,
@@ -115,7 +117,6 @@ async function validateRecipePayload_JSON(
 
   next();
 }
-
 async function validateRecipePayload_FORMDATA(
   req: Request,
   res: Response,
@@ -175,7 +176,6 @@ async function validateRecipePayload_FORMDATA(
 
   next();
 }
-
 async function validateUpdatedRecipePayload_FORMDATA(
   req: Request,
   res: Response,
@@ -183,55 +183,52 @@ async function validateUpdatedRecipePayload_FORMDATA(
 ) {
   // check if req.body is empty
   if (!isObjectEmpty(req.body)) {
-    throw new AppError({
-      httpCode: HttpCode.BAD_REQUEST,
-      description: 'Request body cannot be empty',
-    });
+    next(
+      new AppError({
+        httpCode: HttpCode.BAD_REQUEST,
+        description: 'Request body cannot be empty',
+      })
+    );
   }
-  // check if all required fields were provided
-  // this is necessary as express-validator was made to handle json data only
-  // and for multipart/form-data we need to implement manual checking
-  const result = containsAllExpectedFields(req.body, [
-    'title',
-    'description',
-    'rating',
-    'category',
-    'ingredients',
-    'equipments',
-    'instructions',
-    'calories',
-    'carbohydrates',
-    'protein',
-    'fat',
-    'sodium',
-    'fiber',
-  ]);
-  if (!result.isValid) {
-    throw new AppError({
-      httpCode: HttpCode.BAD_REQUEST,
-      description: `your request body is missing the following fields : ${result.missingFields.toString()}`,
-    });
+
+  //check if an unknown field was provided
+  const fieldsToValidate = Object.keys(req.body);
+  const validFields = Object.keys(RecipeValidationSchema_FORMDATA);
+  const { isValid, unknownField } = containsUnexpectedFields(
+    fieldsToValidate,
+    validFields
+  );
+
+  if (!isValid) {
+    next(
+      new AppError({
+        httpCode: HttpCode.BAD_REQUEST,
+        description: ` unknown field : ${unknownField}  - Recipe payload must only  contain the following  properties : ${Object.keys(
+          RecipeValidationSchema_FORMDATA
+        ).toString()}`,
+      })
+    );
   }
 
   // validate incoming request payload against the req object
-  // const validationResultArray: ResultWithContext[] = await checkSchema(
-  //   optionalRecipeValidationSchema_FORMDATA,
-  //   ['body']
-  // ).run(req);
+  const validationResultArray: ResultWithContext[] = await checkSchema(
+    optionalRecipeValidationSchema_FORMDATA,
+    ['body']
+  ).run(req);
 
-  // if (validationResultArray.length > 0) {
-  //   validationResultArray.forEach((ValidationResult: ResultWithContext) => {
-  //     // throw the first error of the invalid field
-  //     if (ValidationResult.array().length > 0) {
-  //       const errorMsg = ValidationResult.array()[0].msg;
-  //       // throw custom Error for the errorHandler middleware to catch and handle
-  //       throw new AppError({
-  //         httpCode: HttpCode.BAD_REQUEST,
-  //         description: errorMsg,
-  //       });
-  //     }
-  //   });
-  // }
+  if (validationResultArray.length > 0) {
+    validationResultArray.forEach((ValidationResult: ResultWithContext) => {
+      // throw the first error of the invalid field
+      if (ValidationResult.array().length > 0) {
+        const errorMsg = ValidationResult.array()[0].msg;
+        // throw custom Error for the errorHandler middleware to catch and handle
+        throw new AppError({
+          httpCode: HttpCode.BAD_REQUEST,
+          description: errorMsg,
+        });
+      }
+    });
+  }
 
   next();
 }
@@ -297,12 +294,22 @@ async function validateFormDataHeader(
       description:
         'Missing Content-Type header, please make sure to include it with your request.',
     });
-  } else if (!req.header('content-type')?.includes('multipart/form-data')) {
+  }
+  if (!req.header('content-type')?.includes('multipart/form-data')) {
     throw new AppError({
       httpCode: HttpCode.BAD_REQUEST,
       description:
         'Content-Type header has the wrong value ,expected value : "multipart/form-data".',
     });
+  }
+  // check if req.body is empty
+  if (!isObjectEmpty(req.body)) {
+    next(
+      new AppError({
+        httpCode: HttpCode.BAD_REQUEST,
+        description: 'Request body cannot be empty',
+      })
+    );
   }
 
   next();
@@ -328,7 +335,6 @@ async function validateApplicationJsonHeader(
 
   next();
 }
-
 async function validateQueryParams(
   req: Request,
   res: Response,
@@ -453,7 +459,6 @@ async function validateQueryParams(
   }
   next();
 }
-
 async function validateUploadedImage(
   req: Request,
   res: Response,
@@ -467,17 +472,45 @@ async function validateUploadedImage(
   }
   next();
 }
+//#endregion
 
-//--------------------------------------------------------------------------
+//#region -----USER VALIDATION MIDDLEWARES----
+
+async function validateUserPayload_FORMDATA(
+  req: Request,
+  res: Response,
+  next: NextFunction
+) {
+  const validationResultArray = await checkSchema(
+    UserValidationSchema_FORMDATA,
+    ['body']
+  ).run(req);
+
+  if (validationResultArray.length > 0) {
+    validationResultArray.forEach((ValidationResult: ResultWithContext) => {
+      if (ValidationResult.array().length > 0) {
+        const errorMsg = ValidationResult.array()[0].msg;
+        throw new AppError({
+          httpCode: HttpCode.BAD_REQUEST,
+          description: errorMsg,
+        });
+      }
+    });
+  }
+
+  next();
+}
+//#endregion
 
 export {
   validateRecipePayload_FORMDATA,
   validateRecipePayload_JSON,
-  validateRecipeId,
   validateApplicationJsonHeader,
   validateQueryParams,
   validateFormDataHeader,
   validateUploadedImage,
   validateUpdatedRecipePayload_FORMDATA,
   validateUpdatedRecipePayload_JSON,
+  validateID,
+  validateUserPayload_FORMDATA,
 };
