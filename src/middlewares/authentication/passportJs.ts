@@ -61,9 +61,7 @@ const jwtVerifyFunction: VerifyCallback = async (
 ) => {
   // implement verification logic
 
-  //TODO: manually check the expiration date of jwt ??
-  console.log('iat:', payload.iat); // Log issued at time
-  console.log('exp:', payload.exp); // Log expiration time
+  //TODO: jwt seems to stay valid even though it is passed its expiration date ??
   try {
     const user = await User.findById({ _id: payload.sub });
     if (!user) {
