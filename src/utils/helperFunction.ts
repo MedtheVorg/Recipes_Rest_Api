@@ -43,7 +43,6 @@ function appendFilterOptionsToQuery(
         case 'searchBy':
           //apply a regex search on the following fields :
           // 'title','description','category','ingredients','equipments','instructions',
-          console.log(Object.keys(Recipe.schema.paths));
 
           const filterQueryArray = Object.keys(Recipe.schema.paths)
             .slice(0, 7)
@@ -51,7 +50,6 @@ function appendFilterOptionsToQuery(
             .map((field) => ({
               [field]: { $regex: new RegExp(optionValue, 'i') },
             }));
-          console.log(filterQueryArray);
 
           baseQuey = baseQuey.or(filterQueryArray);
           break;
@@ -249,7 +247,7 @@ export function issueJWT(user: HydratedUserDocument) {
   const _id = user._id;
 
   //it is usually 2 weeks
-  const expiresIn = 20000;
+  const expiresIn = '2d';
 
   // jwt payload
   const payload = {
