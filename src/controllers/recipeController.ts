@@ -27,6 +27,7 @@ const readAllRecipes = async (req: Request, res: Response) => {
   const fetchedRecipes: SpreadDocument<HydratedRecipeDocument>[] | [] =
     await query.populate('image').exec();
   // refactor fetched Recipes
+
   const refactoredRecipes = fetchedRecipes.map(
     (recipe: HydratedRecipeDocument) => refactorRecipe(recipe)
   );

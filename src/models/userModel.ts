@@ -4,6 +4,7 @@ import { generateHashedPassword } from '../utils/helperFunction';
 interface IUser {
   username: string;
   password: string;
+  isAdmin?: boolean;
 }
 
 export type HydratedUserDocument = HydratedDocument<IUser>;
@@ -20,6 +21,9 @@ const UserSchema = new Schema<IUser, UserModel>({
   password: {
     type: String,
     required: true,
+  },
+  isAdmin: {
+    type: Boolean,
   },
 });
 

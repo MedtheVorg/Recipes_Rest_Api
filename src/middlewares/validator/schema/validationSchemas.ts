@@ -374,7 +374,7 @@ export const optionalRecipeValidationSchema_FORMDATA = addCommonRules(
 //#endregion
 
 //#region --------------------USER VALIDATOR SCHEMAS----------------------
-export const UserValidationSchema_FORMDATA: Schema = {
+export const UserValidationSchema_JSON: Schema = {
   username: {
     exists: {
       errorMessage: 'username field is required',

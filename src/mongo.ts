@@ -3,6 +3,7 @@ import Logger from './utils/logger';
 
 type ConnectionResponseType = {
   isConnected: boolean;
+  mongoDBClient?: mongoose.mongo.MongoClient;
   dataBaseName?: string;
   errorMessage?: string;
 };
@@ -18,6 +19,7 @@ async function connectToMongoDB(
       return {
         isConnected: true,
         dataBaseName: connection.name,
+        mongoDBClient: connection.getClient(),
       };
     } else {
       return {

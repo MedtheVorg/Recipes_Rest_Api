@@ -1,5 +1,5 @@
 import { NextFunction, Request, Response } from 'express';
-import { body, checkSchema, param } from 'express-validator';
+import { checkSchema, param } from 'express-validator';
 import { ResultWithContext } from 'express-validator/src/chain';
 import { AppError, HttpCode } from '../../utils/AppError';
 import { Types } from 'mongoose';
@@ -11,10 +11,11 @@ import {
 import {
   RecipeValidationSchema_FORMDATA,
   RecipeValidationSchema_JSON,
-  UserValidationSchema_FORMDATA,
+  UserValidationSchema_JSON,
   optionalRecipeValidationSchema_FORMDATA,
   optionalRecipeValidationSchema_JSON,
 } from './schema/validationSchemas';
+import Logger from '../../utils/logger';
 
 export type FilterOptions = {
   title: any;
@@ -302,15 +303,8 @@ async function validateFormDataHeader(
         'Content-Type header has the wrong value ,expected value : "multipart/form-data".',
     });
   }
-  // check if req.body is empty
-  if (!isObjectEmpty(req.body)) {
-    next(
-      new AppError({
-        httpCode: HttpCode.BAD_REQUEST,
-        description: 'Request body cannot be empty',
-      })
-    );
-  }
+
+  Logger.warn('body : ', JSON.stringify(req.body));
 
   next();
 }
@@ -476,15 +470,14 @@ async function validateUploadedImage(
 
 //#region -----USER VALIDATION MIDDLEWARES----
 
-async function validateUserPayload_FORMDATA(
+async function validateUserPayload_JSON(
   req: Request,
   res: Response,
   next: NextFunction
 ) {
-  const validationResultArray = await checkSchema(
-    UserValidationSchema_FORMDATA,
-    ['body']
-  ).run(req);
+  const validationResultArray = await checkSchema(UserValidationSchema_JSON, [
+    'body',
+  ]).run(req);
 
   if (validationResultArray.length > 0) {
     validationResultArray.forEach((ValidationResult: ResultWithContext) => {
@@ -512,5 +505,5 @@ export {
   validateUpdatedRecipePayload_FORMDATA,
   validateUpdatedRecipePayload_JSON,
   validateID,
-  validateUserPayload_FORMDATA,
+  validateUserPayload_JSON,
 };

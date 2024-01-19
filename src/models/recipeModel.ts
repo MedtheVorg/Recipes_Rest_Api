@@ -25,7 +25,8 @@ export interface IRecipe {
 export type HydratedRecipeDocument = HydratedDocument<IRecipe>;
 
 // for the model to be aware of its Methods we have to provide IRecipeMethods as the 3rd generic argument to Model<>
-interface RecipeModel extends Model<IRecipe, {}> {
+interface RecipeModel
+  extends Model<IRecipe, {}, {}, {}, HydratedRecipeDocument> {
   //----------RecipeModel----------------------------------------------------------------------
   // in order to define static methods types in a model we have to extend its type definition
   // and add function type declaration inside the newly extended interface
