@@ -1,15 +1,12 @@
 import express from 'express';
 
 import {
-  validateApplicationJsonHeader,
   validateFormDataHeader,
   validateQueryParams,
-  validateRecipeId,
   validateRecipePayload_FORMDATA,
   validateUpdatedRecipePayload_FORMDATA,
-  validateRecipePayload_JSON,
-  validateUpdatedRecipePayload_JSON,
   validateUploadedImage,
+  validateID,
 } from '../middlewares/validator/validators';
 import {
   createRecipe,
@@ -23,6 +20,7 @@ import {
   handleImageDestination,
   handleImageFilename,
 } from '../utils/helperFunction';
+import jwtAuthentication from '../middlewares/authentication/jwtAuthenticate';
 
 //-------Multer configuration---------
 export const upload = multer({
@@ -35,18 +33,25 @@ export const upload = multer({
 
 // middleware to handle a single uploaded image
 const parseIncomingImage = upload.single('uploaded_image');
+
 //--------------------------------------
 const router = express.Router();
 
 // get all recipes
-router.get('/recipes', validateQueryParams, readAllRecipes);
+router.get('/recipes', jwtAuthentication, validateQueryParams, readAllRecipes);
 
-// Get a single Recipe
-router.get('/recipes/:recipeID', validateRecipeId, readRecipe);
+// Get a s  ingle Recipe
+router.get(
+  '/recipes/:recipeID',
+  jwtAuthentication,
+  validateID('recipeID'),
+  readRecipe
+);
 
 // create a recipe
 router.post(
   '/recipes',
+  jwtAuthentication,
   validateFormDataHeader,
   parseIncomingImage,
   validateUploadedImage,
@@ -56,14 +61,20 @@ router.post(
 // update recipe
 router.patch(
   '/recipes/:recipeID',
+  jwtAuthentication,
   validateFormDataHeader,
-  validateRecipeId,
+  validateID('recipeID'),
   parseIncomingImage,
   validateUpdatedRecipePayload_FORMDATA,
   updateRecipe
 );
 
 // delete a recipe
-router.delete('/recipes/:recipeID', validateRecipeId, deleteRecipe);
+router.delete(
+  '/recipes/:recipeID',
+  jwtAuthentication,
+  validateID('recipeID'),
+  deleteRecipe
+);
 
 export { router as RecipeRouter };

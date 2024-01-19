@@ -7,24 +7,19 @@ import {
   deleteUser,
 } from '../controllers/userController';
 import {
-  validateFormDataHeader,
+  validateApplicationJsonHeader,
   validateID,
-  validateUserPayload_FORMDATA,
+  validateUserPayload_JSON,
 } from '../middlewares/validator/validators';
-import { upload } from './recipeRoutes';
 
 const router = express.Router();
-
-// multer middleware to parse non-file multipart/form-data
-const parseFormData = upload.none();
 
 router.get('/users', readAllUser);
 router.get('/users/:userID', validateID('userID'), readUser);
 router.post(
   '/users',
-  validateFormDataHeader,
-  parseFormData,
-  validateUserPayload_FORMDATA,
+  validateApplicationJsonHeader,
+  validateUserPayload_JSON,
   createUser
 );
 router.patch('/users/:userID', updateUser);
