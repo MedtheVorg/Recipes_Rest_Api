@@ -28,14 +28,14 @@ router.post(
   '/login',
   localAuthentication,
   (req: Request, res: Response, next: NextFunction) => {
-    console.log('authenticated successfully');
-    console.log('req.user :', req.user);
-
     //set jwt cookie
     const signedJwt = issueJWT(req.user!);
-    res.cookie('jwt', signedJwt.token.split(' ')[1]);
-    res.setHeader('Authorization', signedJwt.token);
-    res.status(HttpCode.OK).json({ msg: 'you are logged in !' });
+    const { _id, username, isAdmin } = req.user!;
+    res.status(HttpCode.OK).json({
+      msg: 'logged in successfully',
+      user: { _id, username, isAdmin },
+      token: signedJwt,
+    });
   }
 );
 
