@@ -46,12 +46,23 @@ $ npm install
   PORT = ""
   REMOTE_DB_CONNECTION_STRING = "";
   LOCAL_DB_CONNECTION_STRING = "";
-
+# generate Pem encoded keys
+  you have two options : 
+  - generate your won keys and store them in the keys folder files (private_key.pem and public_key.pem)
+  - or you can use the function in the /src/middlewares/authentication/PEM-ENCODED-KEYS.ts file from line 8 to 18 to generate and store pem encoded key pairs for you.
 
 # Run the server
 $ npm run server
+
 ```
 <br/>
+
+# Swagger documentation
+  swagger was used to document and test the api, you can visit the http://localhost:4500/api-docs end point to test the api.
+  // authentication test cases are not added yet , will remove this comment once I add them.
+
+<br/>
+
 
 # Routes
 Available Routes
