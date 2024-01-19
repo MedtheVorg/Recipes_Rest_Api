@@ -3,7 +3,8 @@ import passport from 'passport';
 import { HttpCode } from '../../utils/AppError';
 
 function localAuthentication(req: Request, res: Response, next: NextFunction) {
-  // Note that if a callback is supplied, it becomes the application's responsibility to log-in the user, establish a session, and otherwise perform the desired operations.
+  // this function will validate user data (username and password) in the form of json or form-urlencoded
+  // and pass it to the local strategy verify function to authenticate a user
   passport.authenticate(
     'local',
     function (
