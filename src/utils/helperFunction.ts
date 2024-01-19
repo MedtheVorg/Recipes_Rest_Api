@@ -2,6 +2,8 @@ import { Query } from 'mongoose';
 import { FilterOptions } from '../middlewares/validator/validators';
 import { HydratedRecipeDocument, Recipe } from '../models/recipeModel';
 import { Request } from 'express';
+import { compare, genSalt, hash } from 'bcrypt';
+import { HydratedUserDocument } from '../models/userModel';
 
 function appendFilterOptionsToQuery(
   baseQuey: Query<any, any>,
@@ -41,12 +43,16 @@ function appendFilterOptionsToQuery(
         case 'searchBy':
           //apply a regex search on the following fields :
           // 'title','description','category','ingredients','equipments','instructions',
+          console.log(Object.keys(Recipe.schema.paths));
+
           const filterQueryArray = Object.keys(Recipe.schema.paths)
-            .slice(0, 6)
+            .slice(0, 7)
             .filter((ele) => ele !== 'rating' && ele !== 'image')
             .map((field) => ({
               [field]: { $regex: new RegExp(optionValue, 'i') },
             }));
+          console.log(filterQueryArray);
+
           baseQuey = baseQuey.or(filterQueryArray);
           break;
       }
@@ -224,4 +230,41 @@ export function handleImageDestination(
   callback(null, './uploads');
 }
 //-------------------------------------------------------------
+
+// password hashing / decrypting functions using bcrypt library
+export async function generateHashedPassword(password: string) {
+  const salt = await genSalt(12);
+  const hashedPassword = await hash(password, salt);
+  return hashedPassword;
+}
+export async function verifyPassword(password: string, hashedPassword: string) {
+  const isValid = await compare(password, hashedPassword);
+  return isValid;
+}
+
+// JWT
+import jwt from 'jsonwebtoken';
+import { PRIV_KEY } from '../middlewares/authentication/PEM-ENCODED-KEYS';
+export function issueJWT(user: HydratedUserDocument) {
+  const _id = user._id;
+
+  //it is usually 2 weeks
+  const expiresIn = 20000;
+
+  // jwt payload
+  const payload = {
+    sub: _id,
+    iat: Date.now(),
+  };
+
+  const signedToken = jwt.sign(payload, PRIV_KEY, {
+    expiresIn: expiresIn,
+    algorithm: 'RS256',
+  });
+
+  return {
+    token: 'Bearer ' + signedToken,
+    expiresIn: expiresIn,
+  };
+}
 export { appendFilterOptionsToQuery };
