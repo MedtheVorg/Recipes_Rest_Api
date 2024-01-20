@@ -304,8 +304,6 @@ async function validateFormDataHeader(
     });
   }
 
-  Logger.warn('body : ', JSON.stringify(req.body));
-
   next();
 }
 async function validateApplicationJsonHeader(
