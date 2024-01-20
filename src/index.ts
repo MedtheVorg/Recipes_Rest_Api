@@ -13,8 +13,6 @@ import healthCheck from './controllers/healthCheck';
 import requestLogger from './middlewares/log/requestLogger';
 import { errorHandler } from './middlewares/errors/errorHandlerMiddleware';
 import notFound from './middlewares/notFound';
-import swaggerUI from 'swagger-ui-express';
-import { swaggerUiSpecs } from './documentation/swagger';
 import session from 'express-session';
 import MongoStore from 'connect-mongo';
 import mongoose from 'mongoose';
@@ -24,6 +22,7 @@ import { GlobalRouter } from './routes';
 // especially the passport.use(strategy) line
 import './middlewares/authentication/passportJs';
 import passport from 'passport';
+import { swaggerDocs } from './documentation/swagger';
 
 // Main APP (Router)
 const app: Express = express();
@@ -81,24 +80,22 @@ function startServer(mongoDBClient: mongoose.mongo.MongoClient) {
     })
   );
 
-  //passport stuff (will refactor this comment later  once I understand exactly what it does)
   // used to initialize passport and allow defined strategies to be used on incoming requests
   app.use(passport.initialize());
 
-  //IGNORE:------------
   // used to populate req.user with data from the current session
   // after a successful login action
   app.use(passport.session());
-  //IGNORE:------------
 
-  //swaggerUI docs Interface
-  app.use('/api-docs', swaggerUI.serve, swaggerUI.setup(swaggerUiSpecs));
   //#endregion
 
   //#region -----------------Routes-------------------
-  app.get('/', healthCheck); //Health check
+  app.get('/healthcheck', healthCheck); //Health check
   app.use('/api/v1', GlobalRouter);
   //#endregion
+
+  //swagger docs generator function
+  swaggerDocs(app, dbConfig.server.port);
 
   //unhandled Route
   app.use(notFound);
@@ -108,6 +105,8 @@ function startServer(mongoDBClient: mongoose.mongo.MongoClient) {
 
   // Listen for connections.
   app.listen(dbConfig.server.port, () => {
-    Logger.info(`Server running on  http://localhost:${dbConfig.server.port}`);
+    Logger.info(
+      `Server running on  http://localhost:${dbConfig.server.port}/healthcheck`
+    );
   });
 }
