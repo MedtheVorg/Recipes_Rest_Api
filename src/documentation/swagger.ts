@@ -1,13 +1,17 @@
 import swaggerJsDoc from 'swagger-jsdoc';
+import swaggerUI from 'swagger-ui-express';
 
+import { version } from '../../package.json';
+import { Request, Response, Express } from 'express';
+import Logger from '../utils/logger';
 const options: swaggerJsDoc.Options = {
   definition: {
     // Every API definition must include the version of the OpenAPI Specification that this definition is based on:
     openapi: '3.0.0',
     // general info about the API
     info: {
-      title: 'Recipe API',
-      version: '1.0.0',
+      title: 'Recipe REST API Docs',
+      version: version,
       description:
         'Rest api that handles CRUD operations against a noSQL MongoDB Database.',
     },
@@ -20,14 +24,29 @@ const options: swaggerJsDoc.Options = {
     consumes: ['multipart/form-data'],
     produces: ['multipart/form-data', 'application/json'],
     schemes: ['http'],
-    tags: [{ name: 'Recipe', description: 'Recipe managing API ' }],
+
+    tags: [
+      {
+        name: 'Authentication',
+        description:
+          'authenticate  yourself before performing CRUD operations on Recipe routes',
+      },
+      { name: 'healthcheck' },
+
+      {
+        name: 'Recipe',
+        description: 'Recipe managing API ',
+      },
+    ],
+
     //components definition
     components: {
       schemas: {
-        Recipe: {
+        CreateRecipeInput: {
           type: 'object',
+
           required: [
-            'image',
+            'uploaded_image',
             'title',
             'description',
             'rating',
@@ -47,7 +66,7 @@ const options: swaggerJsDoc.Options = {
               type: 'string',
               description: 'The Recipe auto-generated ObjectId',
             },
-            image: {
+            uploaded_image: {
               type: 'file', // Assuming the image is a file name
               description: 'Recipe image (.png, jpeg, etc...)',
             },
@@ -129,7 +148,7 @@ const options: swaggerJsDoc.Options = {
             fiber: 6,
           },
         },
-        RecipeOutput: {
+        CreateRecipeResponse: {
           type: 'object',
           required: [
             'image',
@@ -316,15 +335,195 @@ const options: swaggerJsDoc.Options = {
             },
           },
         },
+        RegisterUserInput: {
+          type: 'object',
+          required: ['username', 'password'],
+          properties: {
+            username: {
+              type: 'string',
+              description: 'username',
+              default: 'john Doe',
+            },
+            password: {
+              type: 'string',
+              description: 'StringPassword123',
+            },
+          },
+          example: {
+            username: 'John Doe',
+            password: 'StringPassword1234',
+          },
+        },
+        LoginUserInput: {
+          type: 'object',
+          required: ['username', 'password'],
+          properties: {
+            username: {
+              type: 'string',
+              default: 'johnDoe',
+            },
+            password: {
+              type: 'string',
+            },
+          },
+          example: {
+            username: 'johnDoe',
+            password: 'StringPassword1234',
+          },
+        },
+      },
+      // add the possibility to provide a jwt token
+      securitySchemes: {
+        bearerAuth: {
+          type: 'http',
+          scheme: 'bearer',
+          bearerFormat: 'JWT',
+          description:
+            'Enter your bearer token in the format `<token>` with No Bearer Prefix',
+        },
       },
     },
+
     // endpoints/paths/routes definition
     paths: {
+      '/api/v1/playground/register': {
+        post: {
+          tags: ['Authentication'],
+          summary: 'register a new  user.',
+          requestBody: {
+            required: true,
+            content: {
+              'application/json': {
+                schema: {
+                  type: 'object',
+                  $ref: '#/components/schemas/RegisterUserInput',
+                },
+              },
+            },
+          },
+          responses: {
+            '201': {
+              description: 'Created',
+              content: {
+                'application/json': {
+                  schema: {
+                    type: 'object',
+                    properties: {
+                      success: {
+                        type: 'boolean',
+                        default: true,
+                      },
+                      message: {
+                        type: 'string',
+                        default: 'user created successfully',
+                      },
+                    },
+                  },
+                },
+              },
+            },
+            '409': {
+              description: 'Conflict',
+              content: {
+                'application/json': {
+                  schema: {
+                    type: 'object',
+                    properties: {
+                      message: {
+                        type: 'string',
+                        default: 'user already exists.',
+                      },
+                    },
+                  },
+                },
+              },
+            },
+          },
+        },
+      },
+      '/api/v1/playground/login': {
+        post: {
+          tags: ['Authentication'],
+          summary: 'login as a user',
+          requestBody: {
+            required: true,
+            content: {
+              'application/json': {
+                schema: {
+                  type: 'object',
+                  $ref: '#/components/schemas/LoginUserInput',
+                },
+              },
+            },
+          },
+          responses: {
+            '200': {
+              content: {
+                'application/json': {
+                  schema: {
+                    type: 'object',
+                    properties: {
+                      message: {
+                        type: 'string',
+                        default: 'logged in successfully',
+                      },
+                      user: {
+                        type: 'object',
+                        properties: {
+                          _id: {
+                            type: 'string',
+                          },
+                          username: {
+                            type: 'string',
+                          },
+                          isAdmin: {
+                            type: 'boolean',
+                          },
+                        },
+                      },
+                      token: {
+                        type: 'object',
+                      },
+                    },
+                  },
+                },
+              },
+            },
+          },
+        },
+      },
+      '/healthcheck': {
+        get: {
+          tags: ['healthcheck'],
+          description: 'Responds if the app is up and running',
+          responses: {
+            '200': {
+              description: 'OK',
+              content: {
+                'application/json': {
+                  schema: {
+                    type: 'object',
+                    properties: {
+                      msg: {
+                        type: 'string',
+                        default: 'Server is up and running',
+                      },
+                    },
+                  },
+                },
+              },
+            },
+          },
+        },
+      },
+
       '/api/v1/recipes': {
         get: {
           tags: ['Recipe'],
           summary: 'Get all Recipes',
           description: 'Retrieve a list of all recipes.',
+          security: [{ bearerAuth: [] }],
+
           responses: {
             '200': {
               description: 'Successful response',
@@ -344,7 +543,7 @@ const options: swaggerJsDoc.Options = {
                       recipes: {
                         type: 'array',
                         items: {
-                          $ref: '#/components/schemas/RecipeOutput',
+                          $ref: '#/components/schemas/CreateRecipeResponse',
                         },
                       },
                     },
@@ -357,62 +556,59 @@ const options: swaggerJsDoc.Options = {
             {
               name: 'title',
               in: 'query',
-              description: 'Search by title => ?title= (exact value)',
+              description: 'title = ? (exact value)',
               type: 'string',
             },
             {
               name: 'description',
               in: 'query',
-              description:
-                'Search by description => ?description= (exact value)',
+              description: 'description = ? (exact value)',
               type: 'string',
             },
             {
               name: 'rating',
               in: 'query',
-              description:
-                'Search by rating => ?rating=1 | ?rating_gt= | ?rating_lt= (by default rating is between 1 and 5)',
+              description: 'Recipe = ?  (by default rating is between 1 and 5)',
               type: 'number',
             },
-            // {
-            //   name: 'rating_gt',
-            //   in: 'query',
-            //   description: 'Recipe rating from 1 to 5',
-            //   type: 'number',
-            // },
-            // {
-            //   name: 'rating_lt',
-            //   in: 'query',
-            //   description: 'Recipe rating from 1 to 5',
-            //   type: 'number',
-            // },
+            {
+              name: 'rating_gt',
+              in: 'query',
+              description: 'Recipe > ?',
+              type: 'number',
+            },
+            {
+              name: 'rating_lt',
+              in: 'query',
+              description: 'Recipe < ?',
+              type: 'number',
+            },
 
             {
               name: 'category',
               in: 'query',
               description:
-                'Search by category => ?category= in (Moroccan, Mexican, Italian, Turkish, Chinese)',
+                'category = ?  [Moroccan, Mexican, Italian, Turkish, Chinese]',
               type: 'string',
             },
             {
               name: 'sort',
               in: 'query',
               description:
-                'Sort by a field => ?sort=target,asc by default sorting is in asc order (use desc to reverse the order)',
+                'sort = target,asc by default sorting is in asc order (use desc to reverse the order)',
               type: 'string',
             },
             {
               name: 'limit',
               in: 'query',
-              description:
-                'limit => ?limit=10 limit the received documents number',
+              description: 'limit = ? (limit the received documents number)',
               type: 'number',
             },
             {
-              name: 'search ',
+              name: 'search',
               in: 'query',
               description:
-                '?search= perform a global search on multiple fields',
+                'search = ? (perform a global search on multiple fields)',
               type: 'string',
             },
           ],
@@ -434,13 +630,15 @@ const options: swaggerJsDoc.Options = {
           tags: ['Recipe'],
           summary: 'Create a recipe',
           description: 'create a new Recipe',
+          security: [{ bearerAuth: [] }],
+
           requestBody: {
             content: {
               'multipart/form-data': {
                 schema: {
                   type: 'object',
                   required: [
-                    'image',
+                    'uploaded_image',
                     'title',
                     'description',
                     'rating',
@@ -456,7 +654,7 @@ const options: swaggerJsDoc.Options = {
                     'fiber',
                   ],
                   properties: {
-                    image: {
+                    uploaded_image: {
                       type: 'string',
                       format: 'binary',
                       description: 'Recipe image file (.png, jpeg, etc...)',
@@ -475,7 +673,8 @@ const options: swaggerJsDoc.Options = {
                     },
                     category: {
                       type: 'string',
-                      description: 'Recipe category',
+                      description:
+                        'Recipe category [Moroccan, Mexican, Italian, Turkish, Chinese]',
                     },
                     ingredients: {
                       type: 'string',
@@ -529,7 +728,7 @@ const options: swaggerJsDoc.Options = {
                     properties: {
                       recipes: {
                         type: 'Object',
-                        $ref: '#/components/schemas/RecipeOutput',
+                        $ref: '#/components/schemas/CreateRecipeInput',
                       },
                     },
                   },
@@ -539,12 +738,13 @@ const options: swaggerJsDoc.Options = {
           },
         },
       },
-
       '/api/v1/recipes/{recipeID}': {
         get: {
           tags: ['Recipe'],
           summary: 'Get recipe by ID',
-          description: 'Execute a get request to fetch a recipe by its ',
+          description: 'Execute a get request to fetch a recipe by its ID ',
+          security: [{ bearerAuth: [] }],
+
           responses: {
             '200': {
               description: 'Successful response',
@@ -555,7 +755,7 @@ const options: swaggerJsDoc.Options = {
                     properties: {
                       recipe: {
                         type: 'object',
-                        $ref: '#/components/schemas/RecipeOutput',
+                        $ref: '#/components/schemas/CreateRecipeOutput',
                       },
                     },
                   },
@@ -592,13 +792,15 @@ const options: swaggerJsDoc.Options = {
           tags: ['Recipe'],
           summary: 'Update a recipe',
           description: 'send a patch request to update an existing Recipe',
+          security: [{ bearerAuth: [] }],
+
           requestBody: {
             content: {
               'multipart/form-data': {
                 schema: {
                   type: 'object',
                   properties: {
-                    image: {
+                    uploaded_image: {
                       type: 'string',
                       format: 'binary',
                       description: 'Recipe image file (.png, jpeg, etc...)',
@@ -677,9 +879,13 @@ const options: swaggerJsDoc.Options = {
                   schema: {
                     type: 'object',
                     properties: {
-                      recipes: {
+                      success: {
+                        type: 'boolean',
+                        default: true,
+                      },
+                      updatedRecipe: {
                         type: 'Object',
-                        $ref: '#/components/schemas/RecipeOutput',
+                        $ref: '#/components/schemas/CreateRecipeResponse',
                       },
                     },
                   },
@@ -693,6 +899,8 @@ const options: swaggerJsDoc.Options = {
           tags: ['Recipe'],
           summary: 'Delete a recipe by ID',
           description: 'Execute a delete request to delete  a recipe',
+          security: [{ bearerAuth: [] }],
+
           responses: {
             '200': {
               description: 'Recipe Deleted.',
@@ -745,4 +953,17 @@ const options: swaggerJsDoc.Options = {
 };
 
 // initialize swaggerJsDoc
-export const swaggerUiSpecs = swaggerJsDoc(options);
+const swaggerSpecs = swaggerJsDoc(options);
+
+export function swaggerDocs(app: Express, port: number) {
+  // Swagger page
+  app.use('/docs', swaggerUI.serve, swaggerUI.setup(swaggerSpecs));
+
+  // Docs in JSON format
+  app.get('/docs.json', (req: Request, res: Response) => {
+    res.setHeader('Content-type', 'application/json');
+    res.send(swaggerSpecs);
+  });
+
+  Logger.info(`Docs available at http://localhost:${port}`);
+}
