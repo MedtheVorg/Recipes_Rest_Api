@@ -1,7 +1,6 @@
 import { NextFunction, Request, Response } from 'express';
 import { User } from '../models/userModel';
 import { HttpCode } from '../utils/AppError';
-import { issueJWT } from '../utils/helperFunction';
 
 /**
  * @method GET
@@ -35,13 +34,19 @@ const createUser = async (req: Request, res: Response, next: NextFunction) => {
   const {
     body: { username, password },
   } = req;
+  const alreadyExists = await User.find({ username: username }).exec();
 
+  if (Object.keys(alreadyExists).length > 0) {
+    return res
+      .status(HttpCode.CONFLICT)
+      .json({ message: 'user already exists.' });
+  }
   const createdUser = User.build({ username, password, isAdmin: false });
   await createdUser.save();
 
-  res.status(HttpCode.CREATED).json({
-    user: createdUser,
-  });
+  res
+    .status(HttpCode.CREATED)
+    .json({ success: true, message: 'user created successfully' });
 };
 
 /**
@@ -49,21 +54,17 @@ const createUser = async (req: Request, res: Response, next: NextFunction) => {
  * @description Update User
  * @path /users/:userID
  */
-const updateUser = async (
-  req: Request,
-  res: Response,
-  next: NextFunction
-) => {};
+const updateUser = async (req: Request, res: Response, next: NextFunction) => {
+  //TODO
+};
 
 /**
  * @method DELETE
  * @description Delete User
  * @path /users/:userID
  */
-const deleteUser = async (
-  req: Request,
-  res: Response,
-  next: NextFunction
-) => {};
+const deleteUser = async (req: Request, res: Response, next: NextFunction) => {
+  //TODO
+};
 
 export { createUser, readAllUser, readUser, updateUser, deleteUser };

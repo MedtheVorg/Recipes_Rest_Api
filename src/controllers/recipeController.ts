@@ -20,12 +20,12 @@ const readAllRecipes = async (req: Request, res: Response) => {
 
   // query to execute
   const query = appendFilterOptionsToQuery(
-    Recipe.find({}, { __v: 0 }),
+    Recipe.find({}, { __v: 0 }).populate('image'),
     filterOptions
   );
 
   const fetchedRecipes: SpreadDocument<HydratedRecipeDocument>[] | [] =
-    await query.populate('image').exec();
+    await query.exec();
   // refactor fetched Recipes
 
   const refactoredRecipes = fetchedRecipes.map(
@@ -45,8 +45,11 @@ const readAllRecipes = async (req: Request, res: Response) => {
  */
 const readRecipe = async (req: Request, res: Response) => {
   const { recipeID } = req.params;
+
   const fetchedRecipe: SpreadDocument<HydratedRecipeDocument> | null =
-    await Recipe.findById(recipeID, { __v: 0 }).populate('image').exec();
+    await Recipe.findById({ _id: recipeID }, { __v: 0 })
+      .populate('image')
+      .exec();
 
   fetchedRecipe
     ? res.status(HttpCode.OK).json(refactorRecipe(fetchedRecipe))
@@ -114,9 +117,6 @@ const createRecipe = async (req: Request, res: Response) => {
  */
 const updateRecipe = async (req: Request, res: Response) => {
   const { recipeID } = req.params;
-
-  console.log('updating recipe');
-  console.log(recipeID);
 
   const fetchedRecipe: HydratedRecipeDocument | null = await Recipe.findById(
     recipeID
