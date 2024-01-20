@@ -6,6 +6,7 @@ import localAuthentication from '../middlewares/authentication/localAuthenticate
 import { HttpCode } from '../utils/AppError';
 import { issueJWT } from '../utils/helperFunction';
 import { validateUserPayload_JSON } from '../middlewares/validator/validators';
+import { createUser } from '../controllers/userController';
 
 const router = express.Router();
 
@@ -32,7 +33,7 @@ router.post(
     const signedJwt = issueJWT(req.user!);
     const { _id, username, isAdmin } = req.user!;
     res.status(HttpCode.OK).json({
-      msg: 'logged in successfully',
+      message: 'logged in successfully',
       user: { _id, username, isAdmin },
       token: signedJwt,
     });
@@ -40,20 +41,7 @@ router.post(
 );
 
 // the route called by the register form to register a new user.
-router.post('/register', validateUserPayload_JSON, async (req, res, next) => {
-  const {
-    body: { username, password },
-  } = req;
-
-  const { admin } = req.params;
-  const createdUser = User.build({
-    username,
-    password,
-    isAdmin: admin === '1' ? true : false,
-  });
-  await createdUser.save();
-  res.status(HttpCode.CREATED).json({ user: createdUser });
-});
+router.post('/register', validateUserPayload_JSON, createUser);
 
 // login page
 router.get('/login', (req, res, next) => {
