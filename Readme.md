@@ -27,6 +27,7 @@
  - Create, Read, Update and  Delete operations
  - Image upload using Multer
  - Custom error handling using express-validator
+ - Protected routes with JWT Authentication strategy
 
 <br/>
 
@@ -71,6 +72,8 @@ $ npm run server
 # Routes
 Available Routes
 ```
+POST   /login (log in as a user)
+POST   /register (register a user)
 GET    /Recipes
 GET    /Recipes/:id
 POST   /Recipes
@@ -95,7 +98,7 @@ DELETE /Recipes/:id
  - Using Multer library the server provides the ability to store images locally in the uploads folder while the database tracks information about the uploaded image.
  - Cors Policy is handled using the cors library to allow requests from any origin.
  - Query parsing is handled using the URLSearchParams class for its simple interface and the elimination of the default parsing syntax provided by the express qs module.
- - the server was  built with validation in mind whether its request payload, filtering query params or  uploaded files.
+ - the server was  built with validation in mind whether its request payload, filtering query params,uploaded files or user credentials.
 
 <br/>
 
