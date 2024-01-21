@@ -66,6 +66,7 @@ $ npm run server
     
 </details>
 
+  if you instead prefer to use Postman you can visit the http://localhost:4500/docs.json endpoint  and import its result to postman
 <br/>
 
 
