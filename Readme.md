@@ -57,9 +57,13 @@ $ npm run server
 ```
 <br/>
 
-# Swagger documentation
+# Documentation
   swagger was used to document and test the api, you can visit the http://localhost:4500/api-docs end point to test the api.
-  // authentication test cases are not added yet , will remove this comment once I add them.
+<details open>
+  <summary>docs home page</summary>
+    <img src="./swaggerui.png" />
+    
+</details>
 
 <br/>
 
