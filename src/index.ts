@@ -32,7 +32,7 @@ initializeApp();
 
 async function initializeApp() {
   const { isConnected, dataBaseName, errorMessage, mongoDBClient } =
-    await connectToMongoDB(dbConfig.mongoDB.localUrl, 'local');
+    await connectToMongoDB(dbConfig.mongoDB.remoteUrl, 'remote');
   if (isConnected) {
     Logger.success(`Connected successfully to ${dataBaseName} database.`);
     startServer(mongoDBClient!);
